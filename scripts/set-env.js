@@ -25,15 +25,15 @@ if (fs.existsSync(envPath)) {
 
 const envConfigFile = `export const environment = {
   production: false,
-  geminiApiKey: '${apiKey}',
-  geminiModel: '${model}'
+  geminiApiKey: 'TU_GEMINI_API_KEY',
+  geminiModel: 'gemini-2.5-flash'
 };
 `;
 
 const envProdConfigFile = `export const environment = {
   production: true,
-  geminiApiKey: '${apiKey}',
-  geminiModel: '${model}'
+  geminiApiKey: 'TU_GEMINI_API_KEY',
+  geminiModel: 'gemini-2.5-flash'
 };
 `;
 
@@ -44,17 +44,27 @@ if (!fs.existsSync(dir)) {
 
 fs.writeFileSync(targetPath, envConfigFile);
 fs.writeFileSync(targetProdPath, envProdConfigFile);
-console.log('✅ Archivo environment.ts actualizado desde .env');
+console.log('✅ Archivos environment.ts y environment.prod.ts actualizados con placeholders');
 
 // Copiar worker de PDF.js a public
 const workerSrc = path.join(__dirname, '../node_modules/pdfjs-dist/build/pdf.worker.min.mjs');
 const publicDir = path.join(__dirname, '../public');
 const workerDest = path.join(publicDir, 'pdf.worker.min.mjs');
 
+if (!fs.existsSync(publicDir)) {
+  fs.mkdirSync(publicDir, { recursive: true });
+}
+
+// Generar config.json con los valores reales leídos de .env
+const configPath = path.join(publicDir, 'config.json');
+const configData = {
+  geminiApiKey: apiKey,
+  geminiModel: model
+};
+fs.writeFileSync(configPath, JSON.stringify(configData, null, 2));
+console.log('✅ Archivo public/config.json generado con credenciales reales desde .env');
+
 if (fs.existsSync(workerSrc)) {
-  if (!fs.existsSync(publicDir)) {
-    fs.mkdirSync(publicDir, { recursive: true });
-  }
   fs.copyFileSync(workerSrc, workerDest);
   console.log('✅ PDF worker copiado exitosamente a public/pdf.worker.min.mjs');
 }

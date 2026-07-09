@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  geminiApiKey: 'AIzaSyAEDLmA2t5phN_d8yPJzAR-_BfyG2nHlgM',
+  geminiApiKey: 'TU_GEMINI_API_KEY',
   geminiModel: 'gemini-2.5-flash'
 };

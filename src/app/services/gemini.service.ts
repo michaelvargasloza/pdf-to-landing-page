@@ -6,26 +6,43 @@ import { GoogleGenAI } from '@google/genai';
   providedIn: 'root'
 })
 export class GeminiService {
-  private aiClient: GoogleGenAI | null = null;
+  constructor() {}
 
-  constructor() {
-    this.initClient();
-  }
+  private async getClientAndConfig(): Promise<{ client: GoogleGenAI | null; apiKey: string; modelName: string }> {
+    let apiKey = '';
+    let modelName = 'gemini-2.5-flash';
 
-  private initClient() {
-    const apiKey = environment.geminiApiKey;
+    try {
+      const response = await fetch('/config.json');
+      if (response.ok) {
+        const config = await response.json();
+        apiKey = config.geminiApiKey || '';
+        modelName = config.geminiModel || 'gemini-2.5-flash';
+      }
+    } catch (e) {
+      console.warn('No se pudo cargar config.json, usando environment:', e);
+    }
+
+    // Fallback a environment si no se pudo leer de config.json
+    if (!apiKey || apiKey === 'TU_GEMINI_API_KEY') {
+      apiKey = environment.geminiApiKey;
+      modelName = environment.geminiModel || 'gemini-2.5-flash';
+    }
+
+    let client: GoogleGenAI | null = null;
     if (apiKey && apiKey !== 'TU_GEMINI_API_KEY') {
       try {
-        this.aiClient = new GoogleGenAI({ apiKey });
+        client = new GoogleGenAI({ apiKey });
       } catch (e) {
-        console.warn('GoogleGenAI initialization warning:', e);
+        console.warn('Error inicializando GoogleGenAI:', e);
       }
     }
+
+    return { client, apiKey, modelName };
   }
 
   async generateLandingPage(markdownContent: string): Promise<string> {
-    const apiKey = environment.geminiApiKey;
-    const modelName = environment.geminiModel || 'gemini-2.5-flash';
+    const { client, apiKey, modelName } = await this.getClientAndConfig();
 
     if (!apiKey || apiKey === 'TU_GEMINI_API_KEY') {
       throw new Error('Por favor configura tu GEMINI_API_KEY en el archivo .env');
@@ -62,33 +79,7 @@ Contenido Markdown del documento PDF a transformar:
 ${markdownContent}`;
 
     try {
-      let responseText = '';
-
-      if (this.aiClient) {
-        const response = await this.aiClient.models.generateContent({
-          model: modelName,
-          contents: systemPrompt
-        });
-        responseText = response.text || '';
-      } else {
-        // Fallback vía API REST directa de Gemini
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: systemPrompt }] }]
-          })
-        });
-
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.error?.message || `Error HTTP ${res.status}`);
-        }
-
-        const data = await res.json();
-        responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      }
+      const responseText = await this.executeWithFallback(systemPrompt, modelName, apiKey, client);
 
       // Extracción robusta de HTML usando expresiones regulares
       let cleanHtml = responseText.trim();
@@ -109,6 +100,75 @@ ${markdownContent}`;
     } catch (error: any) {
       console.error('Error invocando el servicio de IA:', error);
       throw new Error(error.message || 'Error al conectar con el servicio de Inteligencia Artificial.');
+    }
+  }
+
+  private async executeWithFallback(systemPrompt: string, primaryModel: string, apiKey: string, client: GoogleGenAI | null): Promise<string> {
+    const modelsToTry = [primaryModel, 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.5-flash']
+      .filter((model, index, self) => self.indexOf(model) === index);
+
+    let lastError: any = null;
+
+    for (const model of modelsToTry) {
+      console.log(`Intentando generar contenido con el modelo: ${model}`);
+      const attempts = 2; // Máximo 2 intentos por modelo
+      for (let attempt = 1; attempt <= attempts; attempt++) {
+        try {
+          return await this.callModel(client, model, systemPrompt, apiKey);
+        } catch (error: any) {
+          lastError = error;
+          console.warn(`Error en el modelo ${model} (intento ${attempt}/${attempts}):`, error);
+
+          // Si el error es por API Key inválida, no reintentamos ni cambiamos de modelo
+          const errorMsg = error.message || '';
+          if (
+            errorMsg.includes('API_KEY_INVALID') ||
+            errorMsg.includes('API key not valid') ||
+            errorMsg.includes('invalid api key') ||
+            (errorMsg.includes('API key') && errorMsg.includes('not found'))
+          ) {
+            throw error;
+          }
+
+          // Si no es el último intento de este modelo, esperar antes de reintentar
+          if (attempt < attempts) {
+            const delay = attempt * 1500; // 1.5s, 3s...
+            console.log(`Esperando ${delay}ms antes del reintento...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+          }
+        }
+      }
+      console.warn(`El modelo ${model} falló todos los intentos. Probando el siguiente modelo de respaldo.`);
+    }
+
+    throw lastError || new Error('Todos los modelos fallaron al intentar procesar la solicitud.');
+  }
+
+  private async callModel(client: GoogleGenAI | null, modelName: string, systemPrompt: string, apiKey: string): Promise<string> {
+    if (client) {
+      const response = await client.models.generateContent({
+        model: modelName,
+        contents: systemPrompt
+      });
+      return response.text || '';
+    } else {
+      // Fallback vía API REST directa de Gemini
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: systemPrompt }] }]
+        })
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error?.message || `Error HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+      return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     }
   }
 }
