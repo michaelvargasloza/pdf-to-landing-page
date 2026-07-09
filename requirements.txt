@@ -1,0 +1,9 @@
+# Este proyecto está desarrollado en Angular y TypeScript (entorno Node.js).
+# Las dependencias del proyecto se administran a través del archivo package.json.
+#
+# Requisitos del sistema:
+# - Node.js >= 18.0.0
+# - npm >= 9.0.0
+#
+# Para instalar todas las dependencias necesarias, ejecuta el siguiente comando:
+# npm install
