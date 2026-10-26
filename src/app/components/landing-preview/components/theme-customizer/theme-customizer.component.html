@@ -1,0 +1,60 @@
+<div class="customizer-panel">
+  <div class="panel-title">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 3.02 1.25 0 2.08-.53 2.5-1.5 1.12-2.58 3.56-1.52 5.06-1.52 1.66 0 3-1.35 3-3.02a3 3 0 0 0-3-3.02Z"/></svg>
+    <span>Personalizar Estilos</span>
+  </div>
+  
+  <div class="controls-grid">
+    <div class="control-group">
+      <label>Color Principal</label>
+      <div class="color-picker-wrapper">
+        <input 
+          type="color" 
+          [ngModel]="config.primaryColor" 
+          (ngModelChange)="onColorChange('primaryColor', $event)" 
+          class="color-input"
+        >
+        <span class="color-code">{{ config.primaryColor }}</span>
+      </div>
+    </div>
+    
+    <div class="control-group">
+      <label>Color de Acento</label>
+      <div class="color-picker-wrapper">
+        <input 
+          type="color" 
+          [ngModel]="config.accentColor" 
+          (ngModelChange)="onColorChange('accentColor', $event)" 
+          class="color-input"
+        >
+        <span class="color-code">{{ config.accentColor }}</span>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>Fondo de Pagina</label>
+      <div class="color-picker-wrapper">
+        <input 
+          type="color" 
+          [ngModel]="config.bgColor" 
+          (ngModelChange)="onColorChange('bgColor', $event)" 
+          class="color-input"
+        >
+        <span class="color-code">{{ config.bgColor }}</span>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>Bordes ({{ config.borderRadius }}px)</label>
+      <input 
+        type="range" 
+        min="0" 
+        max="30" 
+        step="2" 
+        [ngModel]="config.borderRadius" 
+        (input)="onRadiusChange($event)" 
+        class="range-input"
+      >
+    </div>
+  </div>
+</div>

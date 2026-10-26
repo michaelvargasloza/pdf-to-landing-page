@@ -1,0 +1,12 @@
+<div class="editor-wrapper">
+  <div class="editor-header">
+    <span>Puedes corregir cualquier detalle de texto o estilos aqui. Los cambios se actualizaran en la Vista Previa.</span>
+  </div>
+  <textarea 
+    class="code-editor" 
+    [ngModel]="code"
+    (ngModelChange)="onCodeChange($event)"
+    placeholder="Escribe o modifica el codigo HTML/CSS aqui..."
+    spellcheck="false"
+  ></textarea>
+</div>

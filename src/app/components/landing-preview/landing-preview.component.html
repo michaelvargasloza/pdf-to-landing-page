@@ -1,0 +1,53 @@
+<div class="preview-container" id="preview-section">
+  <!-- Toolbar y Tabs -->
+  <app-preview-toolbar
+    [activeTab]="activeTab"
+    [deviceMode]="deviceMode"
+    [isVisualEditMode]="isVisualEditMode"
+    [copied]="copied"
+    (tabSelected)="selectTab($event)"
+    (deviceModeChanged)="deviceMode = $event"
+    (visualEditToggled)="toggleVisualEdit()"
+    (changesApplied)="applyChangesAndPreview()"
+    (codeCopied)="copyCode()"
+    (htmlDownloaded)="downloadHtml()"
+  ></app-preview-toolbar>
+
+  <!-- Panel de Estadisticas de Ahorro de Tokens -->
+  <app-token-savings-panel
+    [stats]="tokenStats"
+    [pdfPageCount]="pdfPageCount"
+  ></app-token-savings-panel>
+
+  <!-- Panel de Personalizacion de Diseno (Solo en Vista Previa) -->
+  <app-theme-customizer
+    *ngIf="activeTab === 'preview'"
+    [config]="themeConfig"
+    (configChange)="onThemeConfigChange($event)"
+  ></app-theme-customizer>
+
+  <!-- Contenido segun Tab -->
+  <div class="preview-content">
+    <!-- Live Preview Iframe con simulacion responsiva -->
+    <div [hidden]="activeTab !== 'preview'" class="iframe-container" [ngClass]="deviceMode">
+      <div class="device-frame">
+        <iframe 
+          #previewIframe
+          title="Landing Page Preview" 
+          class="preview-iframe"
+        ></iframe>
+      </div>
+    </div>
+
+    <!-- Editor interactivo de codigo HTML/CSS -->
+    <app-code-editor
+      *ngIf="activeTab === 'edit'"
+      [(code)]="editedHtml"
+    ></app-code-editor>
+
+    <!-- Markdown Viewer -->
+    <div *ngIf="activeTab === 'markdown'" class="code-wrapper">
+      <pre><code>{{ markdownContent }}</code></pre>
+    </div>
+  </div>
+</div>

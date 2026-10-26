@@ -1,0 +1,76 @@
+.preview-container {
+  max-width: 1300px;
+  margin: 3rem auto 5rem auto;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(16px);
+}
+
+.preview-content {
+  background: #020617;
+  min-height: 650px;
+}
+
+.iframe-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 1.5rem;
+  background: radial-gradient(circle at top, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.8) 100%);
+  transition: all 0.3s ease;
+  min-height: 700px;
+}
+
+.device-frame {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.preview-iframe {
+  width: 100%;
+  height: 700px;
+  border: none;
+  display: block;
+}
+
+.iframe-container.desktop .device-frame {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.iframe-container.tablet .device-frame {
+  max-width: 768px;
+  border: 12px solid #1e293b;
+  border-radius: 24px;
+}
+
+.iframe-container.mobile .device-frame {
+  max-width: 375px;
+  border: 12px solid #1e293b;
+  border-radius: 36px;
+}
+
+.code-wrapper {
+  padding: 2rem;
+  background: #090d16;
+  color: #a5b4fc;
+  font-family: 'Fira Code', 'Cascadia Code', Consolas, Monaco, monospace;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-height: 700px;
+  overflow-y: auto;
+}
+
+pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

@@ -1,0 +1,53 @@
+<div class="token-savings-panel" *ngIf="stats">
+  <div class="savings-header">
+    <div class="savings-badge">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span>Ahorro del {{ stats.savingsPercentage }}%</span>
+    </div>
+    <div class="savings-title-group">
+      <h3>Eficiencia de Tokens (Preprocesamiento Markdown)</h3>
+      <p>Al estructurar el PDF en Markdown limpio localmente, redujimos sustancialmente la carga hacia el modelo de Inteligencia Artificial.</p>
+    </div>
+  </div>
+
+  <div class="savings-stats-grid">
+    <div class="stat-card direct-pdf">
+      <div class="stat-icon-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <div class="stat-details">
+        <span class="stat-label">PDF Directo (Multimodal)</span>
+        <span class="stat-value">{{ stats.pdfDirectTokens | number }} <span class="stat-unit">tokens</span></span>
+        <span class="stat-desc">Procesamiento visual ({{ pdfPageCount }} {{ pdfPageCount === 1 ? 'pag' : 'pags' }}) + overhead binario</span>
+      </div>
+    </div>
+
+    <div class="stat-arrow-divider">
+      <div class="arrow-line"></div>
+      <div class="savings-percentage-bubble">-{{ stats.savingsPercentage }}%</div>
+      <div class="arrow-line"></div>
+    </div>
+
+    <div class="stat-card optimized-markdown">
+      <div class="stat-icon-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+      </div>
+      <div class="stat-details">
+        <span class="stat-label">Via Markdown (Texto Limpio)</span>
+        <span class="stat-value theme-gradient-text">{{ stats.markdownTokens | number }} <span class="stat-unit">tokens</span></span>
+        <span class="stat-desc">{{ stats.markdownLength | number }} caract. en Markdown ({{ stats.formattedFileSize }})</span>
+      </div>
+    </div>
+
+    <div class="stat-card savings-total">
+      <div class="stat-icon-wrapper success">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <div class="stat-details">
+        <span class="stat-label">Total Ahorrado</span>
+        <span class="stat-value success-text">{{ stats.tokensSaved | number }} <span class="stat-unit">tokens</span></span>
+        <span class="stat-desc">Menor tiempo de respuesta y optimizacion de recursos</span>
+      </div>
+    </div>
+  </div>
+</div>

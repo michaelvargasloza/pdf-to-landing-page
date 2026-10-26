@@ -1,0 +1,51 @@
+<div class="uploader-section" id="upload-zone">
+  <div class="section-header">
+    <h2 class="section-title">Carga tu documento PDF</h2>
+    <p class="section-subtitle">Arrastra y suelta tu archivo aqui o haz clic para explorarlo desde tu dispositivo.</p>
+  </div>
+
+  <div 
+    class="drop-zone" 
+    [class.dragging]="isDragging" 
+    [class.disabled]="isLoading"
+    (dragover)="onDragOver($event)" 
+    (dragleave)="onDragLeave($event)" 
+    (drop)="onDrop($event)"
+    (click)="fileInput.click()"
+  >
+    <input 
+      #fileInput 
+      type="file" 
+      accept="application/pdf" 
+      style="display: none;" 
+      (change)="onFileSelected($event)"
+      [disabled]="isLoading"
+    >
+
+    <div *ngIf="!isLoading" class="drop-content">
+      <div class="upload-icon-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="upload-icon">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <path d="M12 18v-6"></path>
+          <path d="M9 15l3-3 3 3"></path>
+        </svg>
+      </div>
+      <p class="drop-text-main">
+        <span class="highlight-link">Haz clic para subir</span> o arrastra tu archivo PDF
+      </p>
+      <p class="drop-text-sub">Soporta archivos PDF hasta 20 MB</p>
+    </div>
+
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="spinner"></div>
+      <p class="loading-status">{{ statusMessage || 'Procesando archivo...' }}</p>
+      <span class="loading-subtext">Esto tomara solo unos segundos</span>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-banner">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span>{{ errorMessage }}</span>
+  </div>
+</div>
